@@ -82,3 +82,23 @@ func TestDiffSchedules_InvalidExprB(t *testing.T) {
 		t.Error("expected error for invalid expression B")
 	}
 }
+
+func TestDiffSchedules_EmptyWindow(t *testing.T) {
+	// from == to means no time range to evaluate — expect all slices empty
+	from := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	to := from
+
+	result, err := DiffSchedules("0 * * * *", "30 * * * *", from, to)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Common) != 0 {
+		t.Errorf("expected 0 common in empty window, got %d", len(result.Common))
+	}
+	if len(result.OnlyInA) != 0 {
+		t.Errorf("expected 0 only in A in empty window, got %d", len(result.OnlyInA))
+	}
+	if len(result.OnlyInB) != 0 {
+		t.Errorf("expected 0 only in B in empty window, got %d", len(result.OnlyInB))
+	}
+}
